@@ -126,7 +126,7 @@ class Testfunction(unittest.TestCase):
         func.insert(1, 4)
         func.insert(2, 5)
         func.insert(3, 3)
-        #self.assertEqual(func.mempty(), None)
+        # self.assertEqual(func.mempty(), None)
 
     def test_mconcat(self):
         func = fun_dynamicarray()
