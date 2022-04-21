@@ -1,4 +1,3 @@
-#name:GuHaoqin
 import unittest
 from mutable import fun_dynamicarray as fun_dynamicarray
 import DynamicArray as DynamicArray
