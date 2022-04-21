@@ -3,10 +3,10 @@ import math
 import numpy as np
 from functools import reduce
 
-DynamicArray = DynamicArray.DynamicArray
+dynamicArray = DynamicArray.DynamicArray
 
 
-class fun_dynamicarray(DynamicArray):
+class fun_dynamicarray(dynamicArray):
 
     def __init__(self):
         """"Initialzes"""
