@@ -1,4 +1,3 @@
-#name:GuHaoqin
 import ctypes
 
 
