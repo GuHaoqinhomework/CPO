@@ -1,4 +1,3 @@
-#name:GuHaoqin
 import DynamicArray as DynamicArray
 import math
 import numpy as np
