@@ -7,7 +7,7 @@ enough for educational purposes.
 
 ## Project structure
 
-- `DynamicArray.py` -- Definition of dynamic array structure method and automatic extension
+- `DynamicArray.py` -- Definition of dynamic array structure method
 - `mutable.py` --It includes the methods to realize a total of 12 functions of lab1
 - `mutable_test.py` -- unit and PBT tests for `Foo`.
 
