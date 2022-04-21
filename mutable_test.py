@@ -1,6 +1,6 @@
 import unittest
-from lab1.mutable import fun_dynamicarray as fun_dynamicarray
-import lab1.DynamicArray as DynamicArray
+from mutable import fun_dynamicarray as fun_dynamicarray
+import DynamicArray as DynamicArray
 from functools import reduce
 import numpy as np
 
