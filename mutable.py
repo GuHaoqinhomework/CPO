@@ -10,11 +10,11 @@ class fun_dynamicarray(dynamicArray):
 
     def __init__(self):
         """"Initialzes"""
-        DynamicArray.__init__(self)
+        dynamicArray.__init__(self)
 
     # 1. add a new element
     def insert(self, key, value):
-        DynamicArray.insert(self, key, value)
+        dynamicArray.insert(self, key, value)
 
     # 2. remove an element
     def deleteindex(self, key):
