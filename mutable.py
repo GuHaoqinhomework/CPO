@@ -1,4 +1,4 @@
-import lab1.DynamicArray as DynamicArray
+import DynamicArray as DynamicArray
 import math
 import numpy as np
 from functools import reduce
