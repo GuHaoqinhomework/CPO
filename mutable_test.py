@@ -60,7 +60,7 @@ class SexpTest(unittest.TestCase):
         exp.eval(exp.parse('(print r2 1)'))
         # test '+' '-' '*' '/' 'sin' 'pi'
         self.assertEqual(exp.eval(exp.parse('(+ r (- 2 (* (sin -0.3) (- (* pi (* r r)) (/ r1 r2)))))')),
-                         5 + 2 - math.sin(-0.3) * (314.1592653589793 - 2 / 1))
+                         5 + 2 - math.sin(-0.3) * (3.141592653589793 * 5 * 5 - 2 / 1))
         # test '=' '>' '<' 'if'
         self.assertEqual(
             exp.eval(
