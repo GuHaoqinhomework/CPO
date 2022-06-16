@@ -12,7 +12,7 @@ enough for educational purposes.
 
 ## Features
 
-- PBT: `test_reverse`,`test_from_list`,`test_find`,`test_filter_func`,`test_map_func`
+- PBT: `parse`,`atom`,`standard_env`
 
 ## Contribution
 
