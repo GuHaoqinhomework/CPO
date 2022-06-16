@@ -1,44 +1,56 @@
-import unittest
-from mutable import *
 import math
+import operator as op
+from typing import Union, Any
 
 
-class SexpTest(unittest.TestCase):
+class Sexp():
 
-    def test_parse(self):
-        e = Sexp()
-        program = "(begin (define a 10) (* a 3))"
-        self.assertEqual(
-            e.parse(program), [
-                'begin', [
-                    'define', 'a', 10], [
-                    '*', 'a', 3]])
+    Symbol = str  # A Lisp Symbol is implemented as a Python str
+    List = list  # A Lisp List is implemented as a Python list
+    # A Lisp Number is implemented as a Python int or float
+    Number = (int, float)
 
-    def test_tokenize(self):
-        e = Sexp()
-        program = "(begin (define a 10) (* a 3))"
-        self.assertEqual(
-            e.tokenize(program), [
-                '(', 'begin', '(', 'define', 'a', '10', ')', '(', '*', 'a', '3', ')', ')'])
+    def __init__(self) -> None:
+        self.global_env = self.standard_env()
 
-    def test_read_from_tokens(self):
-        exp = Sexp()
-        self.assertRaises(SyntaxError, lambda: exp.parse(''))
+    def parse(self, program: str) -> Union[list, int, float, str]:
+        "Read a Scheme expression from a string."
+        return self.read_from_tokens(self.tokenize(program))
+
+    def tokenize(self, s: str) -> list:
+        "Convert a string into a list of tokens."
+        return s.replace('(', ' ( ').replace(')', ' ) ').split()
+
+    def read_from_tokens(self, tokens: list) -> Union[list, int, float, str]:
+        "Read an expression from a sequence of tokens."
+        if len(tokens) == 0:
+            raise SyntaxError('unexpected EOF while reading')
+        token = tokens.pop(0)
+        if '(' == token:
+            L = []
+            while tokens[0] != ')':
+                L.append(self.read_from_tokens(tokens))
+            tokens.pop(0)  # pop off ')'
+            return L
+        elif ')' == token:
+            raise SyntaxError('unexpected )')
+        else:
+            return self.atom(token)
+
+    def atom(self, token: str) -> Union[int, float, str]:
+        "Numbers become numbers; every other token is a symbol."
         try:
-            exp.read_from_tokens(['(', 'print', 'a', '10', ')', ')'])
-        except SyntaxError as e:
-            self.assertEqual(e.args[0], 'unexpected )')
-        program = ['(', 'define', 'a', '10', ')']
-        self.assertEqual(exp.read_from_tokens(program), ['define', 'a', 10])
+            return int(token)
+        except ValueError:
+            try:
+                return float(token)
+            except ValueError:
+                return self.Symbol(token)
 
-    def test_atom(self):
-        exp = Sexp()
-        self.assertEqual(exp.atom('6'), 6)
-        self.assertEqual(exp.atom('4.1'), 4.1)
-        self.assertEqual(exp.atom('+'), '+')
-        self.assertEqual(exp.atom('and'), 'and')
+    # Environments
 
-    def test_standard_env(self):
+    def standard_env(self) -> 'Env':
+        "An environment with some Scheme standard procedures."
         env = Env()
         env.update(vars(math))  # sin, cos, sqrt, pi, ...
         env.update({
@@ -49,66 +61,58 @@ class SexpTest(unittest.TestCase):
             'or': op.or_,
             'not': op.not_,
         })
-        # print(env)
-        self.assertEqual(Sexp().standard_env(), env)
+        return env
 
-    def test_eval(self):
-        exp = Sexp()
-        # test 'print'
-        exp.eval(exp.parse('(print r 10)'))
-        exp.eval(exp.parse('(print r1 5)'))
-        exp.eval(exp.parse('(print r2 1)'))
-        # test '+' '-' '*' '/' 'sin' 'pi'
-        self.assertEqual(exp.eval(exp.parse('(+ r (- 2 (* (sin -0.3) (- (* pi (* r r)) (/ r1 r2)))))')),
-                         10 + 2 - math.sin(-0.3) * (314.1592653589793 - 5 / 1))
-        # test '=' '>' '<' 'if'
-        self.assertEqual(
-            exp.eval(
-                exp.parse('(if (> (* 11 11) 120) (* 7 6) (= r 10))')),
-            42)
-        self.assertEqual(
-            exp.eval(
-                exp.parse('(if (< (* 11 11) 120) (* 7 6) (= r 10))')),
-            True)
-        # test 'and' 'or' 'not'
-        self.assertEqual(exp.eval(exp.parse('(and 1 0)')), 0)
-        self.assertEqual(exp.eval(exp.parse('(or 1 0)')), 1)
-        self.assertEqual(exp.eval(exp.parse('(not 1)')), 0)
+    # eval
 
-
-class EnvTest(unittest.TestCase):
-    def test_find(self):
-        e = Env()
-        dict = {'+': op.add, '-': op.sub, '*': op.mul, '/': op.truediv}
-        e.update(dict)
-        self.assertEqual(e.find('-'), e)
-        try:
-            e.find('>')
-        except AttributeError as e:
-            self.assertEqual(
-                e.args[0], "This arithmetic symbol does not exist")
+    def eval(self, x: Union[str, list], env=None) -> Any:
+        "Evaluate an expression in an environment."
+        if env is None:
+            env = self.global_env
+        if isinstance(x, self.Symbol):  # variable reference
+            return env.find(x)[x]
+        elif not isinstance(x, self.List):  # constant literal
+            return x
+        elif x[0] == 'if':  # (if test conseq alt)
+            (_, test, conseq, alt) = x
+            exp = (conseq if self.eval(test, env) else alt)
+            return self.eval(exp, env)
+        elif x[0] == 'define' or x[0] == 'print':  # (define var exp)
+            (_, var, exp) = x
+            env[var] = self.eval(exp, env)
+        elif x[0] == 'lambda':  # (lambda (var...) body)
+            (_, parms, body) = x
+            return Procedure(parms, body, env)
+        else:  # (proc arg...)
+            proc = self.eval(x[0], env)
+            args = [self.eval(exp, env) for exp in x[1:]]
+            # print("proc: ",proc,", *args: ",args)
+            return proc(*args)
 
 
-class test_Procedure(unittest.TestCase):
-    def test(self):
-        exp = Sexp()
-        exp.eval(exp.parse('(define twice (lambda (x) (* 2 x)))'))
-        self.assertEqual(exp.eval(exp.parse('(twice 5)')), 10)
-        exp.eval(exp.parse('(define repeat (lambda (f) (lambda (x) (f (f x)))))'))
-        self.assertEqual(exp.eval(exp.parse('((repeat twice) 10)')), 40)
-        self.assertEqual(
-            exp.eval(
-                exp.parse('((repeat (repeat twice)) 10)')),
-            160)
-        self.assertEqual(
-            exp.eval(
-                exp.parse('((repeat (repeat (repeat twice))) 10)')),
-            2560)
-        self.assertEqual(
-            exp.eval(
-                exp.parse('((repeat (repeat (repeat (repeat twice)))) 10)')),
-            655360)
+class Env(dict):
+    "The environment is a dictionary with {'var':val} as the key pair, and it also carries a reference to the outer environment."
+
+    def __init__(self, parms=(), args=(), outer=None) -> None:
+        self.update(zip(parms, args))
+        self.outer = outer
+
+    def find(self, var: str) -> 'Env':
+        "Find the innermost Env where var appears."
+        if (var in self):
+            return self
+        elif self.outer is not None:
+            return self.outer.find(var)
+        else:
+            raise AttributeError("This arithmetic symbol does not exist")
 
 
-if __name__ == '__main__':
-    unittest.main()
+class Procedure(object):
+    "A user-defined Scheme procedure."
+    exp = Sexp()
+
+    def __init__(self, parms: str, body: str, env: 'Env') -> None:
+        self.parms, self.body, self.env = parms, body, env
+
+    def __call__(self, *args: str) -> Any:
+        return self.exp.eval(self.body, Env(self.parms, args, self.env))
