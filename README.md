@@ -1,5 +1,5 @@
 
-# GROUP-watermelon - lab 1 - variant 2
+# GROUP-watermelon - lab 3 - variant 8
 
 This is an example project which demonstrates project structure and necessary
 CI checks. It is not the best structure for real-world projects, but good
@@ -7,8 +7,7 @@ enough for educational purposes.
 
 ## Project structure
 
-- `DynamicArray.py` -- Definition of dynamic array structure method
-- `mutable.py` --It includes the methods to realize a total of 12 functions of lab1
+- `mutable.py` --It includes the methods to realize a total of 8 functions of lab3
 - `mutable_test.py` -- unit and PBT tests for `Foo`.
 
 ## Features
@@ -22,11 +21,11 @@ enough for educational purposes.
 
 ## Changelog
 
-- 13.04.2022 - 2
-  - Add test coverage.
-- 13.04.2022 - 1
+- 16.06.2022 - 2
+  - Add test_mutable.
+- 16.06.2022 - 1
   - Update README. Add formal sections.
-- 13.04.2022 - 0
+- 16.06.2022 - 0
   - Initial
 
 ## Design notes
