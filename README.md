@@ -8,7 +8,7 @@ enough for educational purposes.
 ## Project structure
 
 - `mutable.py` --It includes the methods to realize a total of 8 functions of lab3
-- `mutable_test.py` -- unit and PBT tests for `Foo`.
+- `mutable_test.py` --tests for `mutable`.
 
 ## Features
 
