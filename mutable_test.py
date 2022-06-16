@@ -19,7 +19,8 @@ class SexpTest(unittest.TestCase):
         program = "(begin (define a 10) (* a 3))"
         self.assertEqual(
             e.tokenize(program), [
-                '(', 'begin', '(', 'define', 'a', '10', ')', '(', '*', 'a', '3', ')', ')'])
+                '(', 'begin', '(', 'define', 'a', '10', ')',
+                '(', '*', 'a', '3', ')', ')'])
 
     def test_read_from_tokens(self):
         exp = Sexp()
@@ -59,8 +60,10 @@ class SexpTest(unittest.TestCase):
         exp.eval(exp.parse('(print r1 2)'))
         exp.eval(exp.parse('(print r2 1)'))
         # test '+' '-' '*' '/' 'sin' 'pi'
-        self.assertEqual(exp.eval(exp.parse('(+ r (- 2 (* (sin -0.3) (- (* pi (* r r)) (/ r1 r2)))))')),
-                         5 + 2 - math.sin(-0.3) * (3.141592653589793 * 5 * 5 - 2 / 1))
+        self.assertEqual(exp.eval(exp.parse(
+            '(+ r (- 2 (* (sin -0.3) (- (* pi (* r r)) (/ r1 r2)))))')
+        ),
+            5 + 2 - math.sin(-0.3) * (3.141592653589793 * 25 - 2 / 1))
         # test '=' '>' '<' 'if'
         self.assertEqual(
             exp.eval(
@@ -94,7 +97,9 @@ class test_Procedure(unittest.TestCase):
         exp = Sexp()
         exp.eval(exp.parse('(define twice (lambda (x) (* 2 x)))'))
         self.assertEqual(exp.eval(exp.parse('(twice 5)')), 10)
-        exp.eval(exp.parse('(define repeat (lambda (f) (lambda (x) (f (f x)))))'))
+        exp.eval(exp.parse(
+            '(define repeat (lambda (f) (lambda (x) (f (f x)))))'
+        ))
         self.assertEqual(exp.eval(exp.parse('((repeat twice) 10)')), 40)
         self.assertEqual(
             exp.eval(
