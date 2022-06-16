@@ -7,7 +7,7 @@ class SexpTest(unittest.TestCase):
     def test_parse(self):
         e = Sexp()
         program = "(begin (define a 10) (* a 3))"
-        self.assertEqual(e.parse(program), ['begin', ['define', 'a', 10], ['*', 'a', '3']])
+        self.assertEqual(e.parse(program), ['begin', ['define', 'a', 10], ['*', 'a', 3]])
 
     def test_tokenize(self):
         e = Sexp()
@@ -41,21 +41,21 @@ class SexpTest(unittest.TestCase):
             'or': op.or_,
             'not': op.not_,
         })
-        print(env)
+        # print(env)
         self.assertEqual(Sexp().standard_env(), env)
 
     def test_eval(self):
         exp = Sexp()
         # test 'print'
-        exp.eval(exp.parse('(print r 5)'))
-        exp.eval(exp.parse('(print r1 2)'))
+        exp.eval(exp.parse('(print r 10)'))
+        exp.eval(exp.parse('(print r1 5)'))
         exp.eval(exp.parse('(print r2 1)'))
         # test '+' '-' '*' '/' 'sin' 'pi'
         self.assertEqual(exp.eval(exp.parse('(+ r (- 2 (* (sin -0.3) (- (* pi (* r r)) (/ r1 r2)))))')),
-                         5 + 2 - math.sin(-0.3) * (314.1592653589793-2/1))
+                         10 + 2 - math.sin(-0.3) * (314.1592653589793 - 5 / 1))
         # test '=' '>' '<' 'if'
-        self.assertEqual(exp.eval(exp.parse('(if (> (* 11 11) 120) (* 7 6) (= r 5))')), 42)
-        self.assertEqual(exp.eval(exp.parse('(if (< (* 11 11) 120) (* 7 6) (= r 5))')), True)
+        self.assertEqual(exp.eval(exp.parse('(if (> (* 11 11) 120) (* 7 6) (= r 10))')), 42)
+        self.assertEqual(exp.eval(exp.parse('(if (< (* 11 11) 120) (* 7 6) (= r 10))')), True)
         # test 'and' 'or' 'not'
         self.assertEqual(exp.eval(exp.parse('(and 1 0)')), 0)
         self.assertEqual(exp.eval(exp.parse('(or 1 0)')), 1)
