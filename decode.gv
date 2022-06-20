@@ -1,0 +1,16 @@
+digraph G {
+ rankdir=LR;
+ Sexp[shape=rarrow];
+ n_0[label="self.global_env = self.standard_env()"];
+ n_1[label="parse"];
+ n_2[label="standard_env"];
+ n_3[label="eval"];
+ n_4[label="tokenize"];
+ n_5[label="read_from_tokens"];
+ Sexp -> n_0;
+ Sexp -> n_1;
+ n_0 -> n_2;
+ n_1 -> n_3;
+ Sexp -> n_4;
+ n_4 -> n_5;
+}
