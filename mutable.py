@@ -83,16 +83,27 @@ class Sexp():
         elif x[0] == 'lambda':  # (lambda (var...) body)
             (_, parms, body) = x
             return Procedure(parms, body, env)
+
         else:  # (proc arg...)
             proc = self.eval(x[0], env)
             args = [self.eval(exp, env) for exp in x[1:]]
+            try:
+                proc(*args)
+            except ZeroDivisionError:
+                print("ZeroDivisionError happened!")
+                return 0
+            try:
+                x[0]
+            except AttributeError:
+                print("ZeroDivisionError happened!")
             # print("proc: ",proc,", *args: ",args)
+            # print(x)
             return proc(*args)
 
 
 class Env(dict):
-    "The environment is a dictionary with {'var':val} as the key pair, "
-    "and it also carries a reference to the outer environment."
+    "The environment is a dictionary with {'var':val} as the" 
+    "key pair, and it also carries a reference to the outer environment."
 
     def __init__(self, parms=(), args=(), outer=None) -> None:
         self.update(zip(parms, args))
