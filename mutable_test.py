@@ -7,12 +7,11 @@ class SexpTest(unittest.TestCase):
 
     def test_parse(self):
         e = Sexp()
-        program = "(begin (define a 10) (* a 3))"
+        program = "(begin (define a 10) (define b 3) (* a b))"
+        print(e.parse(program))
         self.assertEqual(
-            e.parse(program), [
-                'begin', [
-                    'define', 'a', 10], [
-                    '*', 'a', 3]])
+            e.parse(program), ['begin', ['define', 'a', 10],
+                               ['define', 'b', 3], ['*', 'a', 'b']])
 
     def test_tokenize(self):
         e = Sexp()
@@ -77,6 +76,11 @@ class SexpTest(unittest.TestCase):
         self.assertEqual(exp.eval(exp.parse('(and 1 0)')), 0)
         self.assertEqual(exp.eval(exp.parse('(or 1 0)')), 1)
         self.assertEqual(exp.eval(exp.parse('(not 1)')), 0)
+
+    def test_error(self):
+        exp = Sexp()
+        exp.eval(exp.parse('(+ 3 (/ 2 2))'))
+        exp.eval(exp.parse('(+ 3 (/ 2 0))'))
 
 
 class EnvTest(unittest.TestCase):
