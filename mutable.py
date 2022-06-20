@@ -102,8 +102,8 @@ class Sexp():
 
 
 class Env(dict):
-    """The environment is a dictionary with {'var':val} as the 
-    "key pair, and it also carries a reference to the outer environment."""
+    #The environment is a dictionary with {'var':val} as the 
+    #"key pair, and it also carries a reference to the outer environment.
 
     def __init__(self, parms=(), args=(), outer=None) -> None:
         self.update(zip(parms, args))
